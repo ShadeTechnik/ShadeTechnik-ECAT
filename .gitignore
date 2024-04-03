@@ -1,3 +1,8 @@
 Debug/
 Release/
 .settings/
+
+bin/
+obj/
+
+compile_commands.json
