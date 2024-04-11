@@ -2,13 +2,14 @@
 
 if [ ! -d bin/ ]; then
 	mkdir -v bin/
-else
-	rm -v bin/*.o               2>> /dev/null
-	rm -v bin/ecat-firmware.bin 2>> /dev/null
-	rm -v bin/ecat-firmware.elf 2>> /dev/null
-	rm -v bin/ecat-firmware.map 2>> /dev/null
-	rm -v bin/ecat-firmware.bin 2>> /dev/null
 fi
+
+{
+	rm -v bin/*.o
+	rm -v bin/ecat-firmware.bin
+	rm -v bin/ecat-firmware.elf
+	rm -v bin/ecat-firmware.map
+} 2>> /dev/null
 
 printf "compiling c..."
 arm-none-eabi-gcc \
@@ -44,4 +45,4 @@ arm-none-eabi-size bin/ecat-firmware.elf
 echo
 
 arm-none-eabi-objdump -h -S bin/ecat-firmware.elf  > bin/ecat-firmware.lst
-arm-none-eabi-objcopy -v -O binary bin/ecat-firmware.elf bin/ecat-firmware.bin 
+arm-none-eabi-objcopy -v -O binary bin/ecat-firmware.elf bin/ecat-firmware.bin
