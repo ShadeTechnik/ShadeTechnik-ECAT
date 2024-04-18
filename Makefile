@@ -1,18 +1,21 @@
 TARGET = shade-ecat
 
-# lol
-INC_DIRS = $(shell find . \( -name Inc -o -name Include -o -name Legacy \) | sed 's/^/-I/')
-#$(info Found include directories $(INC_DIRS))
+# lol v2
+INC_DIRS = $(shell find . -name '*.h' -exec dirname {} + | sort -u | sed 's/^/-I/')
 
-SRC = $(shell find . -name '*.c')
+SRC = $(shell find stm-hal -name '*.c') \
+      $(wildcard soes/*.c)              \
+      $(wildcard ./*.c)
 
-BIN_DIR = bin/
+ASM = $(wildcard stm-hal/Core/Startup/*.[Ss]) \
+      $(wildcard ./*.[Ss])
 
 # It's bring your own linker scripts and startup assembly to work day.
 # And also put them in the correct directory! TODO: needs smarts?
-ASM = $(wildcard Core/Startup/*.[Ss]) $(wildcard ./*.[Ss])
+
 LD_SCRIPT = $(wildcard ./*_FLASH.ld)
 
+BIN_DIR = bin/
 OBJ_DIR = obj/
 OBJ     := $(SRC:%.c=$(OBJ_DIR)%.o)
 ASM_OBJ := $(ASM:%.s=$(OBJ_DIR)%.o)
@@ -31,7 +34,6 @@ CFLAGS += \
 	-Wall -Wextra -Werror=vla -Wno-unused-parameter \
 	-DUSE_HAL_DRIVER -DSTM32F446xx --specs=nano.specs \
 	-ffunction-sections -fdata-sections -fstack-usage
-
 
 LDFLAGS += \
 	-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb \
