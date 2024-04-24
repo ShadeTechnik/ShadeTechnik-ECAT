@@ -3,6 +3,7 @@ TARGET = shade-ecat
 # lol v2
 INC_DIRS = $(shell find . -name '*.h' -exec dirname {} + | sort -u | sed 's/^/-I/')
 
+$(shell touch app.c)
 SRC = $(shell find stm-hal -name '*.c') \
       $(wildcard soes/*.c)              \
       app.c
@@ -68,5 +69,3 @@ clean:
 	-$(RM) $(BIN_DIR)
 
 .PHONY: all clean
-
--include $(DEPENDS)
