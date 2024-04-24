@@ -5,7 +5,7 @@ INC_DIRS = $(shell find . -name '*.h' -exec dirname {} + | sort -u | sed 's/^/-I
 
 SRC = $(shell find stm-hal -name '*.c') \
       $(wildcard soes/*.c)              \
-      $(wildcard ./*.c)
+      app.c
 
 ASM = $(wildcard stm-hal/Core/Startup/*.[Ss]) \
       $(wildcard ./*.[Ss])

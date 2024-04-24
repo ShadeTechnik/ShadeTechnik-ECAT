@@ -1,5 +1,10 @@
 #include "soes/ecat_slv.h"
 
+/* BUILD */
+#include "hooks.c"
+#include "lan9252.c"
+/**/
+
 static esc_cfg_t _cfg = {
   .user_arg                    = NULL,
   .use_interrupt               = 0,
