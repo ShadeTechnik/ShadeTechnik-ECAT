@@ -63,10 +63,13 @@ enum Lan9252_Byte_Order
 lan9252_byte_test(void) {
 	u32 byte_test = 0;
 	u32 dummy     = 0;
+
 	if (_rw_var(&byte_test, &dummy) == Fail) { return Lan9252_Endian_Undefined; }
 
-	if (byte_test == BYTE_TEST_GOOD) { return Lan9252_Endian_Little; }
-	if (byte_test == BYTE_TEST_GOOD_BE) { return Lan9252_Endian_Big; }
+	switch (byte_test) {
+	case BYTE_TEST_GOOD: return Lan9252_Endian_Little;
+	case BYTE_TEST_GOOD_BE: return Lan9252_Endian_Big;
+	}
 	return Lan9252_Endian_Undefined;
 }
 
