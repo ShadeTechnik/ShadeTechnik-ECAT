@@ -30,4 +30,24 @@ enum Result {
 	Okay,
 };
 
+union x16 {
+	u16 u;
+	u8  bytes[2];
+};
+union x32 {
+	u32 u;
+	u8  bytes[4];
+};
+
+#define big_endian16_(X_) ((union x16) {.bytes = {(u16)(X_) >> 8, (u16)(X_)&0xff}}).u
+
+#define big_endian32_(X_)                    \
+	((union x32) {                       \
+	   .bytes = {(u32)(X_) >> 24,        \
+	             (u32)(X_) >> 16 & 0xff, \
+	             (u32)(X_) >> 8 & 0xff,  \
+	             (u32)(X_)&0xff},        \
+	 })                                  \
+	  .u  // no u
+
 #endif  /* MISC_H */

@@ -1,6 +1,15 @@
 #include "main.h"
 #include "misc.h"
 
+/* user defined */
+extern enum Result lan9252_readwrite_user(void* rx, const void* tx, int len);
+
+/* peak lazy */
+#define _rw(RX_, TX_, N_) lan9252_readwrite_user(RX_, TX_, N_)
+#define _rw_arr(RX_, TX_) lan9252_readwrite_user(RX_, TX_, array_len_(RX_))
+/* a pointer would be dubious here */
+#define _rw_var(RX_, TX_) lan9252_readwrite_user(RX_, TX_, sizeof(*(RX_)))
+
 enum Registers {
 	ECAT_PRAM_RD_DATA     = 0x0000,
 	ECAT_PRAM_WR_DATA     = 0x0020,
@@ -41,11 +50,40 @@ enum Instructions {
 	SQADW    = 0xe2, /* quad address write */
 };
 
-enum Result
-lan9252_init(SPI_HandleTypeDef* spi) {
-	return Okay;
+#define BYTE_TEST_GOOD    0x87654321
+#define BYTE_TEST_GOOD_BE big_endian32_(BYTE_TEST_GOOD)
+
+enum Lan9252_Byte_Order {
+	Lan9252_Endian_Undefined,
+	Lan9252_Endian_Little,
+	Lan9252_Endian_Big,
+};
+
+enum Lan9252_Byte_Order
+lan9252_byte_test(void) {
+	u32 byte_test = 0;
+	u32 dummy     = 0;
+	if (_rw_var(&byte_test, &dummy) == Fail) { return Lan9252_Endian_Undefined; }
+
+	if (byte_test == BYTE_TEST_GOOD) { return Lan9252_Endian_Little; }
+	if (byte_test == BYTE_TEST_GOOD_BE) { return Lan9252_Endian_Big; }
+	return Lan9252_Endian_Undefined;
 }
 
+int
+lan9252_wait_for_idle(void) {
+	int i = 0;
+	for (; i < 32; i += 1) {
+		if (lan9252_byte_test() != Lan9252_Endian_Undefined) { break; }
+	}
+	return i;
+}
+
+enum Result
+lan9252_init(void) {
+	lan9252_wait_for_idle();
+	return Okay;
+}
 
 int
 lan9252_read(u32 addr, void* buf, int buflen) {

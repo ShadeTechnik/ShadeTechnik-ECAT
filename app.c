@@ -30,6 +30,7 @@ static esc_cfg_t _cfg = {
 
 void
 setup(void) {
+	lan9252_init();
 	ecat_slv_init(&_cfg);
 }
 
